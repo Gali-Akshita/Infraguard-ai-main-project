@@ -17,7 +17,6 @@ except ImportError as e:
     st.error(f"Import Error: {e}")
 
 # --- ASSETS & CONFIG ---
-# Paths are now relative to the root entry point
 LOGO_PATH = os.path.join("frontend", "assets", "logo.png")
 BG_IMAGE_PATH = os.path.join("frontend", "assets", "building.jpg")
 
@@ -70,55 +69,96 @@ def apply_custom_styles(is_login=False):
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         .stApp {{ {bg_style} color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }}
-        header, #stDecoration, footer, [data-testid="stSidebar"] {{ display: none !important; }}
-        .dash-card {{ background: white; padding: 2.5rem; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 2rem; }}
-        .risk-tag {{ padding: 0.7rem 2.5rem; border-radius: 50px; font-weight: 800; }}
-        .risk-HIGH {{ background: #fee2e2; color: #dc2626; }}
-        .risk-MODERATE {{ background: #fef3c7; color: #d97706; }}
-        .risk-LOW {{ background: #dcfce7; color: #16a34a; }}
+        {" .stApp::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: -1; }" if is_login else ""}
+        header, #stDecoration, footer, [data-testid="stSidebar"] {{ display: none !important; visibility: hidden !important; }}
+        .stMainBlockContainer {{ padding-top: 0 !important; padding-bottom: 2rem !important; }}
+        .login-header {{ text-align: center; width: 100%; }}
+        .dash-card {{ background: white; padding: 2.5rem; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }}
+        .metric-box {{ background: #ffffff; padding: 1.5rem; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); }}
+        .risk-tag {{ padding: 0.7rem 2.5rem; border-radius: 50px; font-weight: 800; font-size: 1rem; display: inline-block; margin-top: 15px; letter-spacing: 0.8px; }}
+        .risk-HIGH {{ background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }}
+        .risk-MODERATE {{ background: #fef3c7; color: #d97706; border: 1px solid #d97706; }}
+        .risk-LOW {{ background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; }}
+        .maintenance-panel {{ background: #ffffff; border-left: 8px solid #dc2626; padding: 2.5rem; border-radius: 0 12px 12px 0; margin-top: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }}
+        .measure-item {{ margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 1rem; }}
+        .measure-bullet {{ color: #dc2626; font-size: 1.8rem; }}
     </style>
     """
     st.markdown(css_content, unsafe_allow_html=True)
 
-# --- LOGIN PAGE ---
+# --- PAGES ---
 def render_login():
     apply_custom_styles(is_login=True)
-    st.markdown("<h1 style='color: #dc2626; font-size: 5rem; text-align: center;'>InfraGuard AI</h1>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 20vh;'></div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='login-header'>
+        <h1 style='color: #dc2626; font-size: 7rem; font-weight: 900; margin: 0; text-align: center;'>InfraGuard AI</h1>
+        <p style='color: #000000; font-size: 2rem; font-weight: 700; margin-top: 0.5rem; margin-bottom: 4rem; text-align: center;'>Infrastructure Monitoring Portal</p>
+    </div>
+    """, unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        st.text_input("Email", placeholder="Email Address")
-        st.text_input("Password", type="password", placeholder="Password")
+        st.text_input("Email", placeholder="Email Address", label_visibility="collapsed")
+        st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("PORTAL ACCESS", use_container_width=True):
             st.session_state.authenticated = True
             st.rerun()
 
-# --- NAVIGATION ---
 def render_navbar():
     l, r = st.columns([1.5, 3])
-    with l: st.markdown("## 🏗️ InfraGuard AI")
+    with l:
+        st.markdown("<h2 style='margin:10px 0; color:#1e1b4b; font-weight:800;'>🏗️ InfraGuard AI</h2>", unsafe_allow_html=True)
     with r:
-        n1, n2, n3, n4, n5 = st.columns(5)
-        if n1.button("Overview"): st.session_state.current_page = "Overview"
-        if n2.button("Terminal"): st.session_state.current_page = "Terminal"
-        if n5.button("Logout"):
+        n1, n2, n3, n4, n5 = st.columns([1, 1, 1, 1, 1])
+        if n1.button("Overview", use_container_width=True): st.session_state.current_page = "Overview"
+        if n2.button("Terminal", use_container_width=True): st.session_state.current_page = "Terminal"
+        if n3.button("Surveillance", use_container_width=True): st.session_state.current_page = "Surveillance"
+        if n4.button("GeoWatch", use_container_width=True): st.session_state.current_page = "GeoWatch"
+        if n5.button("Logout", use_container_width=True):
             st.session_state.authenticated = False
             st.rerun()
+    st.markdown("---")
 
-# --- PAGES ---
+def page_overview():
+    st.title("System Methodology & Documentation")
+    st.markdown("<div class='dash-card'><h2>InfraGuard AI Operating Paradigm</h2><p>InfraGuard AI represents a critical advancement in autonomous structural health monitoring (SHM). Our platform provides high-fidelity diagnostic data for bridge spans, industrial foundations, and high-load civil assets.</p></div>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("<div class='dash-card'><h3>1. Neural Crack Detection</h3><p>Our inference engine utilizes state-of-the-art CNN architectures specifically trained on macro and micro-fracture datasets.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>2. Predictive Risk Modeling</h3><p>The system computes risk coefficients by analyzing fracture density and orientation thresholds.</p></div>", unsafe_allow_html=True)
+    with c2:
+        st.markdown("<div class='dash-card'><h3>3. Visual Auditing Techniques</h3><p>We provide <b>Edge Mapping</b> for exact path recovery and <b>Radiance Heatmapping</b> to visualize the structural influence zone.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>4. Catastrophic Failure Prevention</h3><p>Early identified micro-fatigue precursors allow for localized intervention, protecting both public safety and long-term asset fiscality.</p></div>", unsafe_allow_html=True)
+
 def page_terminal():
     st.title("Diagnostic Analysis Terminal")
-    file_up = st.file_uploader("Imagery Feed", type=["jpg", "png"])
-    if file_up:
-        img = Image.open(file_up)
-        _, _, crack_prob = predict_crack(img)
-        h_score = int((1.0 - float(crack_prob)) * 100)
-        st.image(img)
-        st.metric("Structural Health", f"{h_score}%")
+    st.file_uploader("Imagery Feed", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
+
+def page_surveillance():
+    st.title("Direct Surveillance & Monitoring")
+    st.camera_input("Optical Sensor Node-01")
+
+def page_geowatch():
+    st.title("GeoWatch Global Monitor")
+    data = pd.DataFrame({
+        'name': ['Hudson Span', 'Metro Viaduct', 'Industrial Base Alpha', 'Foundation Central', 'Bridge Sector-B'],
+        'lat': [40.7128, 40.7829, 40.7306, 40.7580, 40.8448],
+        'lon': [-74.0060, -73.9654, -73.9352, -73.9855, -73.8648],
+        'risk': ['LOW', 'LOW', 'HIGH', 'MODERATE', 'MODERATE'],
+        'color': [[22, 163, 74, 200], [22, 163, 74, 200], [220, 38, 38, 200], [217, 119, 6, 200], [217, 119, 6, 200]]
+    })
+    view = pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10, pitch=45)
+    layer = pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_color="color", get_radius=800, pickable=True)
+    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view))
 
 # --- BOOTSTRAP ---
 if not st.session_state.authenticated:
     render_login()
 else:
+    apply_custom_styles(is_login=False)
     render_navbar()
-    if st.session_state.current_page == "Overview": st.write("Welcome to InfraGuard AI Dashboard.")
+    if st.session_state.current_page == "Overview": page_overview()
     elif st.session_state.current_page == "Terminal": page_terminal()
+    elif st.session_state.current_page == "Surveillance": page_surveillance()
+    elif st.session_state.current_page == "GeoWatch": page_geowatch()
