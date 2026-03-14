@@ -133,11 +133,53 @@ def page_overview():
 
 def page_terminal():
     st.title("Diagnostic Analysis Terminal")
-    st.file_uploader("Imagery Feed", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
+    st.markdown("Initiate structural audit by providing high-resolution asset captures.")
+    st.markdown("---")
+    file_up = st.file_uploader("Imagery Feed", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
+    if file_up:
+        img = Image.open(file_up)
+        with st.spinner("Processing structural diagnostics..."):
+            _, conf, crack_prob = predict_crack(img)
+            h_score = int(max(0, min(100, (1.0 - float(crack_prob)) * 100.0)))
+            if h_score > 75: risk_tier = "LOW"
+            elif 40 <= h_score <= 75: risk_tier = "MODERATE"
+            else: risk_tier = "HIGH"
+            edges = get_canny_edges(img)
+            damage_viz = get_high_intensity_heatmap(img)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Asset Capture Feed")
+            st.image(img, use_container_width=True)
+            st.subheader("Structural Path (Edge Map)")
+            st.image(edges, use_container_width=True, caption="Fracture Geometry Recovery")
+        with col2:
+            st.subheader("High-Intensity Damage Highlight")
+            st.image(damage_viz, use_container_width=True, caption="Damage Radiance")
+            st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:#64748b; font-weight:700;'>Estimated Structural Health</p>", unsafe_allow_html=True)
+            st.markdown(f"<h1 style='color:#1e1b4b; font-size:4.5rem;'>{h_score}%</h1>", unsafe_allow_html=True)
+            st.progress(h_score / 100)
+            st.markdown(f"<span class='risk-tag risk-{risk_tier}'>{risk_tier} RISK ASSESSMENT</span>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("---")
+        st.subheader("Maintenance Directives")
+        m_list = []
+        if h_score > 75: m_color = "#16a34a"; m_list = ["Quarterly visual audit.", "Protective sealant application.", "Log harmonic baseline.", "Drainage verification.", "Annual sensor calibration."]
+        elif 40 <= h_score <= 75: m_color = "#d97706"; m_list = ["Epoxy path node injection.", "Audit fracture depth profile.", "Transit load restrictions.", "Material resurfacing.", "Monthly diagnostice cycle."]
+        else: m_color = "#dc2626"; m_list = ["RESTRICT ACCESS IMMEDIATELY.", "Support shoring deployment.", "Core-drilling material audit.", "Real-time strain grid install.", "Architectural reinforcement."]
+        st.markdown(f"<div class='maintenance-panel' style='border-left-color: {m_color};'>", unsafe_allow_html=True)
+        for item in m_list: st.markdown(f"<div class='measure-item'><span class='measure-bullet'>•</span> <span>{item}</span></div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 def page_surveillance():
     st.title("Direct Surveillance & Monitoring")
-    st.camera_input("Optical Sensor Node-01")
+    cam_in = st.camera_input("Optical Sensor Node-01")
+    if cam_in:
+        st.success("High-Resolution Asset Capture Received.")
+        if st.button("SEND TO ANALYSIS TERMINAL", use_container_width=True):
+            st.session_state.captured_image = Image.open(cam_in)
+            st.session_state.current_page = "Terminal"
+            st.rerun()
 
 def page_geowatch():
     st.title("GeoWatch Global Monitor")
