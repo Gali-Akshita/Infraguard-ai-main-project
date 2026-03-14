@@ -1,0 +1,14 @@
+# Ignore datasets
+data/
+
+# Ignore trained models
+*.h5
+
+# Ignore archives
+*.zip
+
+# Python cache
+__pycache__/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
