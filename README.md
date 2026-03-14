@@ -1,3 +1,8 @@
+## Live Demo
+
+🚀 **Try the App:**  
+👉 https://infraguard-ai-main-project-9axbaf6sezq8nxjuezzr8p.streamlit.app/
+
 # InfraGuard AI: Integrated Infrastructure Monitoring
 
 A vibrant, AI-powered system for structural integrity monitoring.
