@@ -2,7 +2,7 @@ streamlit
 pillow
 pandas
 pydeck
-tensorflow
+tensorflow-cpu
 opencv-python-headless
 numpy
 rich
