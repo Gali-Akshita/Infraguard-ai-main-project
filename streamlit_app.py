@@ -88,20 +88,82 @@ def apply_custom_styles(is_login=False):
     """
     st.markdown(css_content, unsafe_allow_html=True)
 
+# --- LOGIN PAGE ---
+def render_login():
+    apply_custom_styles(is_login=True)
+    st.markdown("<div style='height: 20vh;'></div>", unsafe_allow_html=True)
+    st.markdown(\"\"\"
+    <div class='login-header'>
+        <h1 style='color: #dc2626; font-size: 7rem; font-weight: 900; margin: 0; text-align: center;'>InfraGuard AI</h1>
+        <p style='color: #000000; font-size: 2rem; font-weight: 700; margin-top: 0.5rem; margin-bottom: 4rem; text-align: center;'>Infrastructure Monitoring Portal</p>
+    </div>
+    \"\"\", unsafe_allow_html=True)
+    
+    c1, c2, c3 = st.columns([1, 1, 1])
+    with c2:
+        email = st.text_input("Email", placeholder="Email Address", label_visibility="collapsed")
+        password = st.text_input("Password", type="password", placeholder="Password", label_visibility="collapsed")
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("PORTAL ACCESS", use_container_width=True):
+            st.session_state.authenticated = True
+            st.rerun()
+
 # --- NAVIGATION ---
 def render_navbar():
     l, r = st.columns([1.5, 3])
-    with l: st.markdown("<h2 style='margin:10px 0; color:#1e1b4b; font-weight:800;'>🏗️ InfraGuard AI</h2>", unsafe_allow_html=True)
+    with l:
+        st.markdown("<h2 style='margin:10px 0; color:#1e1b4b; font-weight:800;'>🏗️ InfraGuard AI</h2>", unsafe_allow_html=True)
     with r:
         n1, n2, n3, n4, n5 = st.columns([1, 1, 1, 1, 1])
         if n1.button("Overview", use_container_width=True): st.session_state.current_page = "Overview"
         if n2.button("Terminal", use_container_width=True): st.session_state.current_page = "Terminal"
         if n3.button("Surveillance", use_container_width=True): st.session_state.current_page = "Surveillance"
         if n4.button("GeoWatch", use_container_width=True): st.session_state.current_page = "GeoWatch"
-        if n5.button("Logout", use_container_width=True): st.session_state.authenticated = False; st.rerun()
+        if n5.button("Logout", use_container_width=True):
+            st.session_state.authenticated = False
+            st.rerun()
     st.markdown("---")
 
 # --- PAGES ---
+
+def page_overview():
+    st.title("System Methodology & Documentation")
+    st.markdown(\"\"\"
+    <div class='dash-card'>
+        <h2>InfraGuard AI Operating Paradigm</h2>
+        <p>InfraGuard AI represents a critical advancement in autonomous structural health monitoring (SHM). Our platform provides high-fidelity diagnostic data for bridge spans, industrial foundations, and high-load civil assets.</p>
+    </div>
+    \"\"\", unsafe_allow_html=True)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown(\"\"\"
+        <div class='dash-card'>
+            <h3>1. Neural Crack Detection</h3>
+            <p>Our inference engine utilizes state-of-the-art CNN architectures specifically trained on macro and micro-fracture datasets.</p>
+        </div>
+        \"\"\", unsafe_allow_html=True)
+        st.markdown(\"\"\"
+        <div class='dash-card'>
+            <h3>2. Predictive Risk Modeling</h3>
+            <p>The system computes risk coefficients by analyzing fracture density and orientation thresholds.</p>
+        </div>
+        \"\"\", unsafe_allow_html=True)
+
+    with c2:
+        st.markdown(\"\"\"
+        <div class='dash-card'>
+            <h3>3. Visual Auditing Techniques</h3>
+            <p>We provide <b>Edge Mapping</b> for exact path recovery and <b>Radiance Heatmapping</b> to visualize the structural influence zone.</p>
+        </div>
+        \"\"\", unsafe_allow_html=True)
+        st.markdown(\"\"\"
+        <div class='dash-card'>
+            <h3>4. Catastrophic Failure Prevention</h3>
+            <p>Early identified micro-fatigue precursors allow for localized intervention, protecting both public safety and long-term asset fiscality.</p>
+        </div>
+        \"\"\", unsafe_allow_html=True)
+
 def page_terminal():
     st.title("Diagnostic Analysis Terminal")
     st.markdown("Initiate structural audit by providing high-resolution asset captures.")
@@ -115,7 +177,9 @@ def page_terminal():
             if h_score > 75: risk_tier = "LOW"
             elif 40 <= h_score <= 75: risk_tier = "MODERATE"
             else: risk_tier = "HIGH"
-            edges = get_canny_edges(img); damage_viz = get_high_intensity_heatmap(img)
+            edges = get_canny_edges(img)
+            damage_viz = get_high_intensity_heatmap(img)
+
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Asset Capture Feed"); st.image(img, use_container_width=True)
@@ -128,41 +192,41 @@ def page_terminal():
             st.progress(h_score / 100)
             st.markdown(f"<span class='risk-tag risk-{risk_tier}'>{risk_tier} RISK ASSESSMENT</span>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+
         st.markdown("---"); st.subheader("Maintenance Directives / Preventive Measures")
         if h_score > 75: m_color = "#16a34a"; m_list = ["Quarterly visual audit.", "Protective sealant application.", "Log harmonic baseline.", "Drainage verification.", "Annual sensor calibration."]
         elif 40 <= h_score <= 75: m_color = "#d97706"; m_list = ["Epoxy path node injection.", "Audit fracture depth profile.", "Transit load restrictions.", "Material resurfacing.", "Monthly diagnostice cycle."]
         else: m_color = "#dc2626"; m_list = ["RESTRICT ACCESS IMMEDIATELY.", "Support shoring deployment.", "Core-drilling material audit.", "Real-time strain grid install.", "Architectural reinforcement."]
-        st.markdown(f"""
+        st.markdown(f\"\"\"
         <div class='maintenance-panel' style='border-left-color: {m_color};'>
             <div class='measure-item'><span class='measure-bullet'>•</span> <span>{m_list[0]}</span></div>
             <div class='measure-item'><span class='measure-bullet'>•</span> <span>{m_list[1]}</span></div>
             <div class='measure-item'><span class='measure-bullet'>•</span> <span>{m_list[2]}</span></div>
             <div class='measure-item'><span class='measure-bullet'>•</span> <span>{m_list[3]}</span></div>
             <div class='measure-item'><span class='measure-bullet'>•</span> <span>{m_list[4]}</span></div>
-        </div>""", unsafe_allow_html=True)
-
-def page_overview():
-    st.title("System Methodology & Documentation")
-    st.markdown("<div class='dash-card'><h2>InfraGuard AI Operating Paradigm</h2><p>InfraGuard AI represents a critical advancement in autonomous structural health monitoring (SHM).</p></div>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
-    with c1: st.markdown("<div class='dash-card'><h3>Neural Crack Detection</h3><p>State-of-the-art CNN architectures.</p></div>", unsafe_allow_html=True)
-    with c2: st.markdown("<div class='dash-card'><h3>Visual Auditing</h3><p>Radiance Heatmapping visualizations.</p></div>", unsafe_allow_html=True)
+        </div>\"\"\", unsafe_allow_html=True)
 
 def page_surveillance():
-    st.title("Direct Surveillance"); cam_in = st.camera_input("Optical Sensor Node-01")
-    if cam_in and st.button("SEND TO ANALYSIS TERMINAL", use_container_width=True):
-        st.session_state.captured_image = Image.open(cam_in); st.session_state.current_page = "Terminal"; st.rerun()
+    st.title("Direct Surveillance & Monitoring")
+    cam_in = st.camera_input("Optical Sensor Node-01")
+    if cam_in:
+        st.success("High-Resolution Asset Capture Received.")
+        if st.button("SEND TO ANALYSIS TERMINAL", use_container_width=True):
+            st.session_state.captured_image = Image.open(cam_in); st.session_state.current_page = "Terminal"; st.rerun()
 
 def page_geowatch():
-    st.title("GeoWatch Monitor")
-    data = pd.DataFrame({'lat': [40.7128, 40.7829], 'lon': [-74.0060, -73.9654], 'color': [[22, 163, 74, 200], [22, 163, 74, 200]]})
-    st.pydeck_chart(pdk.Deck(layers=[pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_color="color", get_radius=800)], initial_view_state=pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10)))
+    st.title("GeoWatch Global Monitor")
+    data = pd.DataFrame({'name': ['Hudson Span', 'Metro Viaduct'], 'lat': [40.7128, 40.7829], 'lon': [-74.0060, -73.9654], 'risk': ['LOW', 'LOW'], 'color': [[22, 163, 74, 200], [22, 163, 74, 200]]})
+    view = pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10, pitch=45)
+    layer = pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_color="color", get_radius=800, pickable=True)
+    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view))
 
 # --- BOOTSTRAP ---
 if not st.session_state.authenticated:
-    from streamlit_app import render_login; render_login()
+    render_login()
 else:
-    apply_custom_styles(is_login=False); render_navbar()
+    apply_custom_styles(is_login=False)
+    render_navbar()
     if st.session_state.current_page == "Overview": page_overview()
     elif st.session_state.current_page == "Terminal": page_terminal()
     elif st.session_state.current_page == "Surveillance": page_surveillance()
