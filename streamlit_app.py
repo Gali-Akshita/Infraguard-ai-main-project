@@ -73,14 +73,16 @@ def apply_custom_styles(is_login=False):
         .stMainBlockContainer {{ padding-top: 0 !important; padding-bottom: 2rem !important; }}
         .login-header {{ text-align: center; width: 100%; }}
         .dash-card {{ background: white; padding: 2.5rem; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }}
-        .metric-box {{ background: #ffffff; padding: 1.5rem; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); }}
-        .risk-tag {{ padding: 0.7rem 2.5rem; border-radius: 50px; font-weight: 800; font-size: 1rem; display: inline-block; margin-top: 15px; letter-spacing: 0.8px; }}
+        .metric-box {{ background: #ffffff; padding: 1.5rem; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05); }}
+        .risk-tag {{ padding: 0.7rem 2.5rem; border-radius: 50px; font-weight: 800; font-size: 1rem; display: inline-block; margin-top: 15px; letter-spacing: 0.1rem; }}
         .risk-HIGH {{ background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }}
         .risk-MODERATE {{ background: #fef3c7; color: #d97706; border: 1px solid #d97706; }}
         .risk-LOW {{ background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; }}
-        h1, h2, h3, h4 {{ margin-bottom: 1.2rem !important; color: #1e1b4b; }}
-        p {{ line-height: 1.8; color: #475569; font-size: 1.1rem; }}
+        h1, h2, h3 {{ color: #1e1b4b; margin-bottom: 1rem !important; }}
+        p {{ font-size: 1.1rem; line-height: 1.8; color: #475569; }}
         .maintenance-panel {{ background: #ffffff; border-left: 8px solid #dc2626; padding: 2.5rem; border-radius: 0 12px 12px 0; margin-top: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }}
+        .measure-item {{ margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 1rem; }}
+        .measure-bullet {{ color: #dc2626; font-size: 1.8rem; font-weight: 900; }}
     </style>
     """
     st.markdown(css_content, unsafe_allow_html=True)
@@ -118,6 +120,17 @@ def render_navbar():
     st.markdown("---")
 
 # --- PAGES ---
+def page_overview():
+    st.title("System Methodology & Documentation")
+    st.markdown("<div class='dash-card'><h2>InfraGuard AI Operating Paradigm</h2><p>InfraGuard AI represents a critical advancement in autonomous structural health monitoring (SHM). Our platform provides high-fidelity diagnostic data for bridge spans, industrial foundations, and high-load civil assets.</p></div>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("<div class='dash-card'><h3>1. Neural Crack Detection</h3><p>Our inference engine utilizes state-of-the-art CNN architectures specifically trained on macro and micro-fracture datasets to identify early structural fatigue.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>2. Predictive Risk Modeling</h3><p>The system computes risk coefficients by analyzing fracture density, orientation thresholds, and material fatigue parameters.</p></div>", unsafe_allow_html=True)
+    with c2:
+        st.markdown("<div class='dash-card'><h3>3. Visual Auditing Techniques</h3><p>We provide <b>Edge Mapping</b> for exact path recovery and <b>Radiance Heatmapping</b> to visualize the structural influence zone of detected cracks.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>4. Catastrophic Failure Prevention</h3><p>Early identified precursors allow for localized intervention, protecting both public safety and long-term asset fiscality.</p></div>", unsafe_allow_html=True)
+
 def page_terminal():
     st.title("Diagnostic Analysis Terminal")
     st.markdown("Initiate structural audit by providing high-resolution asset captures.")
@@ -133,29 +146,34 @@ def page_terminal():
             edges = get_canny_edges(img); damage_viz = get_high_intensity_heatmap(img)
         col1, col2 = st.columns(2)
         with col1:
-            st.subheader("Asset Feed"); st.image(img, use_container_width=True)
-            st.subheader("Edge Map"); st.image(edges, use_container_width=True)
+            st.subheader("Asset Capture Feed"); st.image(img, use_container_width=True)
+            st.subheader("Structural Path (Edge Map)"); st.image(edges, use_container_width=True, caption="Fracture Geometry Recovery")
         with col2:
-            st.subheader("Damage Heatmap"); st.image(damage_viz, use_container_width=True)
+            st.subheader("High-Intensity Damage Highlight"); st.image(damage_viz, use_container_width=True, caption="Damage Radiance Visibility")
             st.markdown(f'''
             <div class='metric-box'>
-                <p style='color:#64748b; font-weight:700;'>Estimated Structural Health</p>
-                <h1 style='color:#1e1b4b; font-size:4.5rem;'>{h_score}%</h1>
-                <p><span class='risk-tag risk-{risk_tier}'>{risk_tier} RISK</span></p>
+                <p style='color:#64748b; font-weight:700; margin-bottom: 0.5rem;'>ESTIMATED STRUCTURAL HEALTH</p>
+                <h1 style='color:#1e1b4b; font-size:6rem; margin: 0; line-height: 1;'>{h_score}%</h1>
+                <div style='margin-top: 1rem;'><span class='risk-tag risk-{risk_tier}'>{risk_tier} RISK ASSESSMENT</span></div>
             </div>''', unsafe_allow_html=True)
-
-def page_overview():
-    st.title("System Methodology")
-    st.markdown("<div class='dash-card'><h2>Operating Paradigm</h2><p>High-fidelity structural health monitoring.</p></div>", unsafe_allow_html=True)
+        
+        st.markdown("---"); st.subheader("Maintenance Directives / Preventive Measures")
+        if h_score > 75: m_color = "#16a34a"; m_list = ["Quarterly visual audit.", "Protective sealant application.", "Log harmonic baseline.", "Drainage verification.", "Annual sensor calibration."]
+        elif 40 <= h_score <= 75: m_color = "#d97706"; m_list = ["Epoxy path node injection.", "Audit fracture depth profile.", "Transit load restrictions.", "Material resurfacing.", "Monthly diagnostic cycle."]
+        else: m_color = "#dc2626"; m_list = ["RESTRICT ACCESS IMMEDIATELY.", "Support shoring deployment.", "Core-drilling material audit.", "Real-time strain grid install.", "Architectural reinforcement."]
+        st.markdown(f"<div class='maintenance-panel' style='border-left-color: {m_color};'>", unsafe_allow_html=True)
+        for item in m_list: st.markdown(f"<div class='measure-item'><span class='measure-bullet'>•</span> <span>{item}</span></div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 def page_surveillance():
-    st.title("Direct Surveillance"); cam_in = st.camera_input("Optical Sensor")
-    if cam_in and st.button("SEND TO ANALYSIS"): 
+    st.title("Direct Surveillance & Monitoring"); cam_in = st.camera_input("Optical Sensor Node-01")
+    if cam_in and st.button("SEND TO ANALYSIS TERMINAL", use_container_width=True): 
         st.session_state.captured_image = Image.open(cam_in); st.session_state.current_page = "Terminal"; st.rerun()
 
 def page_geowatch():
-    st.title("GeoWatch"); data = pd.DataFrame({'lat': [40.7128], 'lon': [-74.0060]})
-    st.pydeck_chart(pdk.Deck(layers=[pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_radius=500)], initial_view_state=pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10)))
+    st.title("GeoWatch Global Monitor")
+    data = pd.DataFrame({'name': ['Hudson Span', 'Metro Viaduct', 'Industrial Base Alpha'], 'lat': [40.7128, 40.7829, 40.7306], 'lon': [-74.0060, -73.9654, -73.9352], 'risk': ['LOW', 'LOW', 'HIGH'], 'color': [[22, 163, 74, 200], [22, 163, 74, 200], [220, 38, 38, 200]]})
+    st.pydeck_chart(pdk.Deck(layers=[pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_color="color", get_radius=800, pickable=True)], initial_view_state=pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10, pitch=45)))
 
 # --- BOOTSTRAP ---
 if not st.session_state.authenticated:
