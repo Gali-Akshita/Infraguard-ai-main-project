@@ -180,6 +180,29 @@ def page_terminal():
         for item in m_list:
             st.markdown(f"<div style='display:flex; align-items:center; gap:1rem; margin-bottom:0.8rem; padding-left:1rem; border-left:4px solid {m_color}; font-weight:500; color:#334155;'>• {item}</div>", unsafe_allow_html=True)
 
+def page_surveillance():
+    st.title("Direct Surveillance & Monitoring")
+    st.markdown("Active node access for real-time site verification and multi-material structural indexing.")
+    st.markdown("""
+    <div style='display: flex; gap: 1rem; margin-bottom: 2rem;'>
+        <div style='padding: 0.5rem 1.5rem; background: #f1f5f9; border-radius: 50px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;'>🏗️ CONCRETE</div>
+        <div style='padding: 0.5rem 1.5rem; background: #f1f5f9; border-radius: 50px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;'>⛓️ STEEL</div>
+        <div style='padding: 0.5rem 1.5rem; background: #f1f5f9; border-radius: 50px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;'>🧱 MASONRY</div>
+        <div style='padding: 0.5rem 1.5rem; background: #f1f5f9; border-radius: 50px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;'>🌉 COMPOSITE</div>
+    </div>""", unsafe_allow_html=True)
+    st.subheader("Direct Node Access (Webcam)")
+    cam_in = st.camera_input("Optical Sensor Node: Local-01")
+    if cam_in:
+        st.success("High-Resolution Asset Capture Received.")
+        st.info("The system is ready to analyze detected fatigue in the selected material profile.")
+        if st.button("PROCEED TO ANALYTICAL TERMINAL", use_container_width=True):
+            st.session_state.captured_image = Image.open(cam_in); st.session_state.current_page = "Terminal"; st.rerun()
+    st.markdown("""
+    <div class='dash-card' style='margin-top: 2rem;'>
+        <h4>Optical Node Manual</h4>
+        <p>1. Align the camera node with the target structural section.<br>2. Capture a steady artifact using the capture button above.<br>3. Route the data to the terminal for processing.</p>
+    </div>""", unsafe_allow_html=True)
+
 def page_geowatch():
     st.title("GeoWatch Global Monitor")
     data = pd.DataFrame({'name': ['Hudson Span', 'Bridge Sector-B', 'Metro Viaduct'], 'lat': [40.7128, 40.8448, 40.7829], 'lon': [-74.0060, -73.8648, -73.9654], 'risk': ['LOW', 'MODERATE', 'LOW'], 'color': [[22, 163, 74, 200], [217, 119, 6, 200], [22, 163, 74, 200]]})
@@ -187,9 +210,9 @@ def page_geowatch():
     st.markdown("---")
     st.subheader("Infrastructural Risk Classifications")
     c1, c2, c3 = st.columns(3)
-    with c1: st.markdown("<div style='padding:1.5rem; background:#dcfce7; border-radius:12px; border:1px solid #16a34a;'><h4 style='color:#16a34a; margin:0;'>🟢 STABLE (LOW)</h4><p style='color:#166534; font-size:0.9rem; margin-top:10px;'>Score <b>>80%</b>. Structural integrity is within nominal operating bounds. Routine maintenance suggested.</p></div>", unsafe_allow_html=True)
-    with c2: st.markdown("<div style='padding:1.5rem; background:#fef3c7; border-radius:12px; border:1px solid #d97706;'><h4 style='color:#d97706; margin:0;'>🟠 MONITORING (MODERATE)</h4><p style='color:#92400e; font-size:0.9rem; margin-top:10px;'>Score <b>50% - 80%</b>. Surface fatigue detected. Requires specialized audit and localized repair.</p></div>", unsafe_allow_html=True)
-    with c3: st.markdown("<div style='padding:1.5rem; background:#fee2e2; border-radius:12px; border:1px solid #dc2626;'><h4 style='color:#dc2626; margin:0;'>🔴 PRIORITY (HIGH)</h4><p style='color:#991b1b; font-size:0.9rem; margin-top:10px;'>Score <b><50%</b>. Deep fractures identified. Restricted transit and immediate structural shoring required.</p></div>", unsafe_allow_html=True)
+    with c1: st.markdown("<div style='padding:1.5rem; background:#dcfce7; border-radius:12px; border:1px solid #16a34a;'><h4 style='color:#16a34a; margin:0;'>🟢 STABLE (LOW)</h4><p style='color:#166534; font-size:0.9rem; margin-top:10px;'>Score <b>>80%</b>. Structural integrity is within nominal operating bounds.</p></div>", unsafe_allow_html=True)
+    with c2: st.markdown("<div style='padding:1.5rem; background:#fef3c7; border-radius:12px; border:1px solid #d97706;'><h4 style='color:#d97706; margin:0;'>🟠 MONITORING (MODERATE)</h4><p style='color:#92400e; font-size:0.9rem; margin-top:10px;'>Score <b>50% - 80%</b>. Surface fatigue detected. Requires specialized audit.</p></div>", unsafe_allow_html=True)
+    with c3: st.markdown("<div style='padding:1.5rem; background:#fee2e2; border-radius:12px; border:1px solid #dc2626;'><h4 style='color:#dc2626; margin:0;'>🔴 PRIORITY (HIGH)</h4><p style='color:#991b1b; font-size:0.9rem; margin-top:10px;'>Score <b><50%</b>. Deep fractures identified. Restricted transit required.</p></div>", unsafe_allow_html=True)
 
 # --- LOGIN PAGE ---
 def render_login():
