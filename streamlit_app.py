@@ -80,31 +80,9 @@ def apply_custom_styles(is_login=False):
         .risk-LOW {{ background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; }}
         h1, h2, h3 {{ color: #1e1b4b; margin-bottom: 1rem !important; }}
         p {{ font-size: 1.1rem; line-height: 1.8; color: #475569; }}
-        .maintenance-panel {{ background: #ffffff; border-left: 8px solid #dc2626; padding: 2.5rem; border-radius: 0 12px 12px 0; margin-top: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }}
-        .measure-item {{ margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 1rem; }}
-        .measure-bullet {{ color: #dc2626; font-size: 1.8rem; font-weight: 900; }}
     </style>
     """
     st.markdown(css_content, unsafe_allow_html=True)
-
-# --- LOGIN PAGE ---
-def render_login():
-    apply_custom_styles(is_login=True)
-    st.markdown("<div style='height: 20vh;'></div>", unsafe_allow_html=True)
-    st.markdown('''
-    <div class='login-header'>
-        <h1 style='color: #dc2626; font-size: 7rem; font-weight: 900; margin: 0; text-align: center;'>InfraGuard AI</h1>
-        <p style='color: #000000; font-size: 2rem; font-weight: 700; margin-top: 0.5rem; margin-bottom: 4rem; text-align: center;'>Infrastructure Monitoring Portal</p>
-    </div>
-    ''', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c2:
-        st.text_input("Email", placeholder="Email Address", key="email", label_visibility="collapsed")
-        st.text_input("Password", type="password", placeholder="Password", key="password", label_visibility="collapsed")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("PORTAL ACCESS", use_container_width=True):
-            st.session_state.authenticated = True
-            st.rerun()
 
 # --- NAVIGATION ---
 def render_navbar():
@@ -122,14 +100,12 @@ def render_navbar():
 # --- PAGES ---
 def page_overview():
     st.title("System Methodology & Documentation")
-    st.markdown("<div class='dash-card'><h2>InfraGuard AI Operating Paradigm</h2><p>InfraGuard AI represents a critical advancement in autonomous structural health monitoring (SHM). Our platform provides high-fidelity diagnostic data for bridge spans, industrial foundations, and high-load civil assets.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div class='dash-card'><h2>InfraGuard AI Operating Paradigm</h2><p>Structural health monitoring with high-fidelity diagnostics.</p></div>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='dash-card'><h3>1. Neural Crack Detection</h3><p>Our inference engine utilizes state-of-the-art CNN architectures specifically trained on macro and micro-fracture datasets to identify early structural fatigue.</p></div>", unsafe_allow_html=True)
-        st.markdown("<div class='dash-card'><h3>2. Predictive Risk Modeling</h3><p>The system computes risk coefficients by analyzing fracture density, orientation thresholds, and material fatigue parameters.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>Neural Crack Detection</h3><p>State-of-the-art CNN architectures for early fatigue identification.</p></div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div class='dash-card'><h3>3. Visual Auditing Techniques</h3><p>We provide <b>Edge Mapping</b> for exact path recovery and <b>Radiance Heatmapping</b> to visualize the structural influence zone of detected cracks.</p></div>", unsafe_allow_html=True)
-        st.markdown("<div class='dash-card'><h3>4. Catastrophic Failure Prevention</h3><p>Early identified precursors allow for localized intervention, protecting both public safety and long-term asset fiscality.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='dash-card'><h3>Visual Auditing</h3><p>Edge Mapping and Radiance Heatmapping to visualize structural influence zones.</p></div>", unsafe_allow_html=True)
 
 def page_terminal():
     st.title("Diagnostic Analysis Terminal")
@@ -140,40 +116,51 @@ def page_terminal():
         with st.spinner("Processing structural diagnostics..."):
             _, conf, crack_prob = predict_crack(img)
             h_score = int(max(0, min(100, (1.0 - float(crack_prob)) * 100.0)))
-            if h_score > 75: risk_tier = "LOW"
-            elif 40 <= h_score <= 75: risk_tier = "MODERATE"
-            else: risk_tier = "HIGH"
+            if h_score > 80: risk_tier = "LOW"
+            elif h_score < 50: risk_tier = "HIGH"
+            else: risk_tier = "MODERATE"
             edges = get_canny_edges(img); damage_viz = get_high_intensity_heatmap(img)
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Asset Capture Feed"); st.image(img, use_container_width=True)
-            st.subheader("Structural Path (Edge Map)"); st.image(edges, use_container_width=True, caption="Fracture Geometry Recovery")
+            st.subheader("Edge Map"); st.image(edges, use_container_width=True)
         with col2:
-            st.subheader("High-Intensity Damage Highlight"); st.image(damage_viz, use_container_width=True, caption="Damage Radiance Visibility")
+            st.subheader("Damage Heatmap"); st.image(damage_viz, use_container_width=True)
             st.markdown(f'''
             <div class='metric-box'>
-                <p style='color:#64748b; font-weight:700; margin-bottom: 0.5rem;'>ESTIMATED STRUCTURAL HEALTH</p>
-                <h1 style='color:#1e1b4b; font-size:6rem; margin: 0; line-height: 1;'>{h_score}%</h1>
+                <p style='color:#64748b; font-weight:700;'>ESTIMATED STRUCTURAL HEALTH</p>
+                <h1 style='color:#1e1b4b; font-size:6rem; margin: 0;'>{h_score}%</h1>
                 <div style='margin-top: 1rem;'><span class='risk-tag risk-{risk_tier}'>{risk_tier} RISK ASSESSMENT</span></div>
             </div>''', unsafe_allow_html=True)
         
         st.markdown("---"); st.subheader("Maintenance Directives / Preventive Measures")
-        if h_score > 75: m_color = "#16a34a"; m_list = ["Quarterly visual audit.", "Protective sealant application.", "Log harmonic baseline.", "Drainage verification.", "Annual sensor calibration."]
-        elif 40 <= h_score <= 75: m_color = "#d97706"; m_list = ["Epoxy path node injection.", "Audit fracture depth profile.", "Transit load restrictions.", "Material resurfacing.", "Monthly diagnostic cycle."]
+        if risk_tier == "LOW": m_color = "#16a34a"; m_list = ["Quarterly visual audit.", "Protective sealant application.", "Log harmonic baseline.", "Drainage verification.", "Annual sensor calibration."]
+        elif risk_tier == "MODERATE": m_color = "#d97706"; m_list = ["Epoxy path node injection.", "Audit fracture depth profile.", "Transit load restrictions.", "Material resurfacing.", "Monthly diagnostic cycle."]
         else: m_color = "#dc2626"; m_list = ["RESTRICT ACCESS IMMEDIATELY.", "Support shoring deployment.", "Core-drilling material audit.", "Real-time strain grid install.", "Architectural reinforcement."]
-        st.markdown(f"<div class='maintenance-panel' style='border-left-color: {m_color};'>", unsafe_allow_html=True)
-        for item in m_list: st.markdown(f"<div class='measure-item'><span class='measure-bullet'>•</span> <span>{item}</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-def page_surveillance():
-    st.title("Direct Surveillance & Monitoring"); cam_in = st.camera_input("Optical Sensor Node-01")
-    if cam_in and st.button("SEND TO ANALYSIS TERMINAL", use_container_width=True): 
-        st.session_state.captured_image = Image.open(cam_in); st.session_state.current_page = "Terminal"; st.rerun()
+        for item in m_list:
+            st.markdown(f"<div style='display:flex; align-items:center; gap:1rem; margin-bottom:0.8rem; padding-left:1rem; border-left:4px solid {m_color}; font-weight:500; color:#334155;'>• {item}</div>", unsafe_allow_html=True)
 
 def page_geowatch():
     st.title("GeoWatch Global Monitor")
     data = pd.DataFrame({'name': ['Hudson Span', 'Metro Viaduct', 'Industrial Base Alpha'], 'lat': [40.7128, 40.7829, 40.7306], 'lon': [-74.0060, -73.9654, -73.9352], 'risk': ['LOW', 'LOW', 'HIGH'], 'color': [[22, 163, 74, 200], [22, 163, 74, 200], [220, 38, 38, 200]]})
     st.pydeck_chart(pdk.Deck(layers=[pdk.Layer("ScatterplotLayer", data, get_position=["lon", "lat"], get_color="color", get_radius=800, pickable=True)], initial_view_state=pdk.ViewState(latitude=40.75, longitude=-73.97, zoom=10, pitch=45)))
+    st.markdown("---")
+    st.subheader("Infrastructural Risk Classifications")
+    c1, c2, c3 = st.columns(3)
+    with c1: st.markdown("<div style='padding:1.5rem; background:#dcfce7; border-radius:12px; border:1px solid #16a34a;'><h4 style='color:#16a34a; margin:0;'>🟢 STABLE (LOW)</h4><p style='color:#166534; font-size:0.9rem; margin-top:10px;'>Score <b>>80%</b>. Structure nominal.</p></div>", unsafe_allow_html=True)
+    with c2: st.markdown("<div style='padding:1.5rem; background:#fef3c7; border-radius:12px; border:1px solid #d97706;'><h4 style='color:#d97706; margin:0;'>🟠 MONITORING (MOD)</h4><p style='color:#92400e; font-size:0.9rem; margin-top:10px;'>Score <b>50% - 80%</b>. Local repairs req.</p></div>", unsafe_allow_html=True)
+    with c3: st.markdown("<div style='padding:1.5rem; background:#fee2e2; border-radius:12px; border:1px solid #dc2626;'><h4 style='color:#dc2626; margin:0;'>🔴 PRIORITY (HIGH)</h4><p style='color:#991b1b; font-size:0.9rem; margin-top:10px;'>Score <b><50%</b>. Immediate intervention.</p></div>", unsafe_allow_html=True)
+
+# --- LOGIN ---
+def render_login():
+    apply_custom_styles(is_login=True)
+    st.markdown("<div style='height: 20vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='login-header'><h1 style='color:#dc2626; font-size:7rem; font-weight:900;'>InfraGuard AI</h1><p style='color:#000; font-size:2rem; font-weight:700;'>Infrastructure Monitoring Portal</p></div>", unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([1, 1, 1])
+    with c2:
+        st.text_input("Email", placeholder="Email Address", key="email", label_visibility="collapsed")
+        st.text_input("Password", type="password", placeholder="Password", key="password", label_visibility="collapsed")
+        if st.button("PORTAL ACCESS", use_container_width=True): st.session_state.authenticated = True; st.rerun()
 
 # --- BOOTSTRAP ---
 if not st.session_state.authenticated:
