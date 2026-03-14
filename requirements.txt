@@ -1,5 +1,8 @@
-streamlit==1.55.0
-tensorflow==2.13.0
+streamlit
+pillow
+pandas
+pydeck
+tensorflow
+opencv-python-headless
 numpy
-opencv-python
 rich
